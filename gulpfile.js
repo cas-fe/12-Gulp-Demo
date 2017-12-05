@@ -1,18 +1,56 @@
 var gulp = require('gulp'),
 	util = require('gulp-util'),
-	webpack = require('webpack');
+	webpack = require('webpack'),
+	UglifyJsPlugin = require('uglifyjs-webpack-plugin'),
+	once = require('once'),
+	path = require('path');
 
-gulp.task('js', function(cb) {
-	webpack({
+function log(err, stats, cb) {
+	cb = once(cb)
+
+	if (err) {
+		console.log(err);
+	}
+
+	util.log(stats.toString({
+		colors: util.colors.supportsColor,
+		hash: false,
+		timings: false,
+		chunks: false,
+		chunkModules: false,
+		modules: false,
+		children: true,
+		version: true,
+		cached: false,
+		cachedAssets: false,
+		reasons: false,
+		source: false,
+		errorDetails: false,
+		assetsSort: 'name'
+	}));
+
+	cb()
+}
+
+var compiler = webpack({
 		entry: './source/main.js',
 		module: {
-			loaders: [
+			rules: [
 				{
 					test: /\.js$/,
 					exclude: /node_modules/,
 					loader: 'babel-loader',
-					query: {
-						presets: ['es2015']
+					options: {
+						// Insert polyfills if needed
+						presets: [
+							['@babel/preset-env', {
+								useBuiltIns: 'usage',
+								targets: {
+									browsers: ['last 2 versions']
+								},
+								debug: true
+							}]
+						]
 					}
 				}
 			]
@@ -20,43 +58,27 @@ gulp.task('js', function(cb) {
 
 		// Minifiy in prod mode
 		plugins: [].concat(util.env.dev ? [] : [
-			new webpack.optimize.UglifyJsPlugin({
+			new UglifyJsPlugin({
 				output: {
 					ascii_only: true
 				}
 			})
 		]),
 		output: {
-			path: 'build',
+			path: path.resolve(__dirname, 'build'),
 			filename: '[name].js'
 		},
-		devtool: util.env.dev ? 'inline-source-map' : null
-	}, function(err, stats) {
-		if (err) {
-			console.log(err);
-		}
+		devtool: util.env.dev ? 'inline-source-map' : false
+	});
 
-		util.log(stats.toString({
-			colors: util.colors.supportsColor,
-			hash: false,
-			timings: false,
-			chunks: false,
-			chunkModules: false,
-			modules: false,
-			children: true,
-			version: true,
-			cached: false,
-			cachedAssets: false,
-			reasons: false,
-			source: false,
-			errorDetails: false,
-			assetsSort: 'name'
-		}));
-
-		cb();
+gulp.task('js', function(cb) {
+	compiler.run(function(err, stats) {
+		log(err, stats, cb)
 	});
 });
 
-gulp.task('default', function() {
-	gulp.watch('source/*.js', ['js']);
+gulp.task('default', function(cb) {
+	compiler.watch({}, function(err, stats) {
+		log(err, stats, cb)
+	});
 });
