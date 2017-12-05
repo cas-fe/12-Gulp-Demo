@@ -1,5 +1,7 @@
 var gulp = require('gulp'),
 	sass = require('gulp-sass'),
+	postCSS = require('gulp-postcss'),
+	autoprefixer = require('autoprefixer'),
 	spritesmith = require('gulp.spritesmith'),
 	merge = require('merge-stream'),
 	runSequence = require('run-sequence');
@@ -7,6 +9,11 @@ var gulp = require('gulp'),
 gulp.task('css', function() {
 	return gulp.src('source/*.scss')
 		.pipe(sass())
+		.pipe(postCSS([
+			autoprefixer({
+				browsers: ['last 10 versions']
+			})
+		]))
 		.pipe(gulp.dest('build/'));
 });
 
