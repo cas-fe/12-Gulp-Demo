@@ -6,8 +6,6 @@ var gulp = require('gulp'),
 	path = require('path');
 
 function log(err, stats, cb) {
-	cb = once(cb)
-
 	if (err) {
 		console.log(err);
 	}
@@ -29,7 +27,7 @@ function log(err, stats, cb) {
 		assetsSort: 'name'
 	}));
 
-	cb()
+	cb();
 }
 
 var compiler = webpack({
@@ -69,12 +67,14 @@ var compiler = webpack({
 
 gulp.task('js', function(cb) {
 	compiler.run(function(err, stats) {
-		log(err, stats, cb)
+		log(err, stats, cb);
 	});
 });
 
 gulp.task('default', function(cb) {
+	cb = once(cb);
+
 	compiler.watch({}, function(err, stats) {
-		log(err, stats, cb)
+		log(err, stats, cb);
 	});
 });
