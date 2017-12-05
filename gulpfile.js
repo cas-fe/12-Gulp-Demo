@@ -27,9 +27,7 @@ function log(err, stats, cb) {
 		assetsSort: 'name'
 	}));
 
-	if (cb) {
-		cb();
-	}
+	cb();
 }
 
 var compiler = webpack({
@@ -75,7 +73,7 @@ var compiler = webpack({
 
 gulp.task('js', function(cb) {
 	compiler.run(function(err, stats) {
-		log(err, stats, cb)
+		log(err, stats, cb);
 	});
 });
 
@@ -90,9 +88,11 @@ gulp.task('css', function() {
 		.pipe(gulp.dest('build/'));
 });
 
-gulp.task('default', function() {
+gulp.task('default', function(cb) {
+	cb = once(cb);
+
 	compiler.watch({}, function(err, stats) {
-		log(err, stats);
+		log(err, stats, cb);
 	});
 
 	gulp.watch('source/*.scss', ['css']);
