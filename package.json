@@ -2,13 +2,17 @@
   "name": "gulp-demo",
   "version": "1.0.0",
   "dependencies": {
-    "gulp": "^3.9.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-jshint": "^2.0.4",
-    "gulp-uglify": "^3.0.0",
-    "jshint": "^2.9.5"
+    "gulp": "^4.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-jshint": "^2.1.0",
+    "gulp-uglify": "^3.0.1",
+    "jshint": "^2.9.6"
   },
   "scripts": {
     "gulp": "gulp"
+  },
+  "devDependencies": {
+    "minimist": "^1.2.0",
+    "through2": "^2.0.3"
   }
 }
